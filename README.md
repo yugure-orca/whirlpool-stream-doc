@@ -9,6 +9,8 @@ It also provides strong data consistency.
 
 The data delivered is always for the slot with the next block height after the previously delivered block height, and is never missing. In addition, delivery can start from any slot within a 3-day period, so if the stream is disconnected, the stream can be resumed without losing any data.
 
+Demo: https://whirlpool-now-devel.yugure.dev/stream/events/sse?limit=20
+
 # Whirlpool Event Stream Endpoint
 ## Endpoint
 | Protocol           | Endpoint                                                            |
