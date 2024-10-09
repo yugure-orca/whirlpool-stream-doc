@@ -112,12 +112,14 @@ Only the following events are sent out.
 | PositionBundleInitialized  | InitializePositionBundle             |
 |                            | InitializePositionBundleWithMetadata |
 | PositionClosed             | ClosePosition                        |
+|                            | ClosePositionWithTokenExtensions     |
 |                            | CloseBundledPosition                 |
 | PositionFeesHarvested      | CollectFees                          |
 |                            | CollectFeesV2                        |
 | PositionHarvestUpdated     | UpdateFeesAndRewards                 |
 | PositionOpened             | OpenPosition                         |
 |                            | OpenPositionWithMetadata             |
+|                            | OpenPositionWithTokenExtensions      |
 |                            | OpenBundledPosition                  |
 | PositionRewardHarvested    | CollectReward                        |
 |                            | CollectRewardV2                      |
@@ -325,23 +327,24 @@ Only the following events are sent out.
 | pbo        | position_bundle_owner | PubkeyString |                                      |
 
 ### PositionClosed (`PC`)
-| JSON Field | Name                  | Type         | Notes                |
-| ---------- | --------------------- | ------------ | -------------------- |
-| o          | origin                | "cp"         | ClosePosition        |
-|            |                       | "cbp"        | CloseBundledPosition |
-| w          | whirlpool             | PubkeyString |                      |
-| p          | position              | PubkeyString |                      |
-| lti        | lower_tick_index      | i32          |                      |
-| uti        | upper_tick_index      | i32          |                      |
-| ldp        | lower_decimal_price   | DecimalPrice |                      |
-| udp        | upper_decimal_price   | DecimalPrice |                      |
-| pa         | position_authority    | PubkeyString |                      |
-| pt         | position_type         | "p"          | Position             |
-|            |                       | "bp"         | BundledPosition      |
-| pm         | position_mint         | PubkeyString | Position only        |
-| pbm        | position_bundle_mint  | PubkeyString | BundledPosition only |
-| pb         | position_bundle       | PubkeyString | BundledPosition only |
-| pbi        | position_bundle_index | u16          | BundledPosition only |
+| JSON Field | Name                  | Type         | Notes                            |
+| ---------- | --------------------- | ------------ | -------------------------------- |
+| o          | origin                | "cp"         | ClosePosition                    |
+|            |                       | "cbp"        | CloseBundledPosition             |
+|            |                       | "cpwte"      | ClosePositionWithTokenExtensions |
+| w          | whirlpool             | PubkeyString |                                  |
+| p          | position              | PubkeyString |                                  |
+| lti        | lower_tick_index      | i32          |                                  |
+| uti        | upper_tick_index      | i32          |                                  |
+| ldp        | lower_decimal_price   | DecimalPrice |                                  |
+| udp        | upper_decimal_price   | DecimalPrice |                                  |
+| pa         | position_authority    | PubkeyString |                                  |
+| pt         | position_type         | "p"          | Position                         |
+|            |                       | "bp"         | BundledPosition                  |
+| pm         | position_mint         | PubkeyString | Position only                    |
+| pbm        | position_bundle_mint  | PubkeyString | BundledPosition only             |
+| pb         | position_bundle       | PubkeyString | BundledPosition only             |
+| pbi        | position_bundle_index | u16          | BundledPosition only             |
 
 ### PositionFeesHarvested (`PFH`)
 | JSON Field | Name               | Type         | Notes         |
@@ -362,24 +365,25 @@ Only the following events are sent out.
 | p          | position           | PubkeyString |                      |
 
 ### PositionOpened (`PO`)
-| JSON Field | Name                  | Type         | Notes                    |
-| ---------- | --------------------- | ------------ | ------------------------ |
-| o          | origin                | "op"         | OpenPosition             |
-|            |                       | "opwm"       | OpenPositionWithMetadata |
-|            |                       | "obp"        | OpenBundledPosition      |
-| w          | whirlpool             | PubkeyString |                          |
-| p          | position              | PubkeyString |                          |
-| lti        | lower_tick_index      | i32          |                          |
-| uti        | upper_tick_index      | i32          |                          |
-| ldp        | lower_decimal_price   | DecimalPrice |                          |
-| udp        | upper_decimal_price   | DecimalPrice |                          |
-| pa         | position_authority    | PubkeyString |                          |
-| pt         | position_type         | "p"          | Position                 |
-|            |                       | "bp"         | BundledPosition          |
-| pm         | position_mint         | PubkeyString | Position only            |
-| pbm        | position_bundle_mint  | PubkeyString | BundledPosition only     |
-| pb         | position_bundle       | PubkeyString | BundledPosition only     |
-| pbi        | position_bundle_index | u16          | BundledPosition only     |
+| JSON Field | Name                  | Type         | Notes                           |
+| ---------- | --------------------- | ------------ | ------------------------------- |
+| o          | origin                | "op"         | OpenPosition                    |
+|            |                       | "opwm"       | OpenPositionWithMetadata        |
+|            |                       | "obp"        | OpenBundledPosition             |
+|            |                       | "opwte"      | OpenPositionWithTokenExtensions |
+| w          | whirlpool             | PubkeyString |                                 |
+| p          | position              | PubkeyString |                                 |
+| lti        | lower_tick_index      | i32          |                                 |
+| uti        | upper_tick_index      | i32          |                                 |
+| ldp        | lower_decimal_price   | DecimalPrice |                                 |
+| udp        | upper_decimal_price   | DecimalPrice |                                 |
+| pa         | position_authority    | PubkeyString |                                 |
+| pt         | position_type         | "p"          | Position                        |
+|            |                       | "bp"         | BundledPosition                 |
+| pm         | position_mint         | PubkeyString | Position only                   |
+| pbm        | position_bundle_mint  | PubkeyString | BundledPosition only            |
+| pb         | position_bundle       | PubkeyString | BundledPosition only            |
+| pbi        | position_bundle_index | u16          | BundledPosition only            |
 
 ### PositionRewardHarvested (`PRH`)
 | JSON Field | Name               | Type         | Notes           |
