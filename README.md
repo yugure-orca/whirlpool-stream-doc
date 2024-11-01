@@ -278,7 +278,7 @@ Only the following events are sent out.
 | nfr        | new_fee_rate | u16          | value after the event  |
 |            |              |              |                        |
 
-### PoolInitialized (`IP`)
+### PoolInitialized (`PI`)
 | JSON Field | Name               | Type         | Notes            |
 | ---------- | ------------------ | ------------ | ---------------- |
 | o          | origin             | "ip"         | InitializePool   |
