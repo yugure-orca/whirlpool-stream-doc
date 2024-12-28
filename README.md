@@ -1,37 +1,55 @@
 🚨 THIS FEATURE IS STILL EXPERIMENTAL
 
-# What is Whirlpool Event Stream
-Whirlpool Event Stream is a semi-real-time distribution of instructions executed by Whirlpool programs along with useful data.
+# What is Whirlpool Stream
+Whirlpool Stream is a semi-real-time distribution of the followings:
+- event: instructions executed by Whirlpool program along with useful data
+- account delta: delta data of account data owned by Whirlpool program
 
 Useful data that cannot be obtained from block data, such as price changes before and after swaps, or liquidity changes before and after position operations, can be obtained.
 
 It also provides strong data consistency.
 
-The data delivered is always for the slot with the next block height after the previously delivered block height, and is never missing. In addition, delivery can start from any slot within a 3-day period, so if the stream is disconnected, the stream can be resumed without losing any data.
+The data delivered is always for the slot with the next block height after the previously delivered block height, and is never missing.
+In addition, delivery can start from any slot within a 3-day period, so if the stream is disconnected, the stream can be resumed without losing any data.
 
-Demo: https://whirlpool-now-devel.yugure.dev/stream/events/sse?limit=20
+## Demo
+### event stream (default)
+https://orcanauts-a.whirlpool-stream.pleiades.dev/demo/stream/refined/sse?limit=20
 
-# Whirlpool Event Stream Endpoint
+### account delta stream
+https://orcanauts-a.whirlpool-stream.pleiades.dev/demo/stream/refined/sse?limit=20&event=none&account=all
+
+### event & account delta stream
+https://orcanauts-a.whirlpool-stream.pleiades.dev/demo/stream/refined/sse?limit=20&event=all&account=all
+
+# Whirlpool Stream Endpoint
 ## Endpoint
-| Protocol           | Endpoint                                                            |
-| ------------------ | ------------------------------------------------------------------- |
-| Server-Sent Events | `https://whirlpool-now-devel.yugure.dev/<APIKEY>/stream/events/sse` |
-| WebSocket          | `https://whirlpool-now-devel.yugure.dev/<APIKEY>/stream/events/tws` |
+There are 2 endpoints (`orcanauts-a` and `orcanauts-b`) for high availability purpose.
 
-You can try the following "DEMO" endpoint. But its concurrency is 1, so connection will be closed when another request is made.
+| Protocol           | Endpoint                                                                        |
+| ------------------ | ------------------------------------------------------------------------------- |
+| Server-Sent Events | `https://orcanauts-a.whirlpool-stream.pleiades.dev/<APIKEY>/stream/refined/sse` |
+|                    | `https://orcanauts-b.whirlpool-stream.pleiades.dev/<APIKEY>/stream/refined/sse` |
+| WebSocket          | `https://orcanauts-a.whirlpool-stream.pleiades.dev/<APIKEY>/stream/refined/ws`  |
+|                    | `https://orcanauts-b.whirlpool-stream.pleiades.dev/<APIKEY>/stream/refined/ws`  |
+
+You can try the following "DEMO" endpoint.
+But its concurrency is 1, so connection will be closed when another request is made.
 
 | Protocol           | Endpoint                                                   |
 | ------------------ | ---------------------------------------------------------- |
-| Server-Sent Events | `https://whirlpool-now-devel.yugure.dev/stream/events/sse` |
-| WebSocket          | `https://whirlpool-now-devel.yugure.dev/stream/events/tws` |
+| Server-Sent Events | `https://orcanauts-a.whirlpool-stream.pleiades.dev/demo/stream/refined/sse` |
+|                    | `https://orcanauts-b.whirlpool-stream.pleiades.dev/demo/stream/refined/sse` |
+| WebSocket          | `https://orcanauts-a.whirlpool-stream.pleiades.dev/demo/stream/refined/ws`  |
+|                    | `https://orcanauts-b.whirlpool-stream.pleiades.dev/demo/stream/refined/ws`  |
 
 ## Parameters
-| Parameter | Required | Type                   | Default     | Purpose                                                                       |
-| --------- | -------- | ---------------------- | ----------- | ----------------------------------------------------------------------------- |
-| slot      | no       | u64                    | latest slot | Start sending from the slot right AFTER the specified slot                    |
-| limit     | no       | u64                    | 256         | The stream is closed after the specified number of blocks have been sent out. |
-| filter    | no       | "trade" \| "liquidity" | no filter   | Send out only specific Whirlpool events                                       |
-|           |          |                        |             |                                                                               |
+| Parameter | Required | Type                                      | Default     | Purpose                                                                       |
+| --------- | -------- | ----------------------------------------- | ----------- | ----------------------------------------------------------------------------- |
+| slot      | no       | u64                                       | latest slot | Start sending from the slot right AFTER the specified slot                    |
+| limit     | no       | u64                                       | 256         | The stream is closed after the specified number of blocks have been sent out. |
+| event     | no       | "trade" \| "liquidity" \| "all" \| "none" | "all"       | Send out only specific Whirlpool events                                       |
+| account   | no       | "trade" \| "all" \| "none"                | "none"      | Send out only specific Whirlpool account delta                                |
 
 ### Notes
 - `slot` can be a slot number within the last 3 days. In other words, this endpoint has the ability to start a stream going back 3 days in the past.
@@ -51,13 +69,19 @@ https://orcanauts-apikey.pleiades.dev/
 - Since Orcanauts ownership information is refreshed approximately every 30 minutes, it may take up to 30 minutes for Orcanauts moves to be reflected in APIKEY.
 - It should be noted that this feature is being made available to Orcanauts owners because it was convenient for APIKEY management, with no intention of providing any permanent added value to Orcanauts.
 
-## Filter
-### trade
+## `event` Parameter
+### `none`
+No events is sent out.
+
+### `all`
+All events is sent out.
+
+### `trade`
 Only the following events are sent out.
 
 - Traded
 
-### liquidity
+### `liquidity`
 Only the following events are sent out.
 
 - Traded
@@ -80,15 +104,30 @@ Only the following events are sent out.
 - RewardEmissionsUpdated
 - RewardAuthorityUpdated
 
-# Whirlpool Event Definition
+## `account` Parameter
+### `none`
+No account deltas is sent out.
+
+### `all`
+All account deltas is sent out.
+
+### `trade`
+Only the account deltas for the following accounts are sent out.
+
+- Whirlpool
+- TickArray
+
+# Event
 
 ## Instruction / Event Mapping
 - All instructions are mapped to specific events.
 - Some instructions are mapped to the same event when the effects are very similar.
 - TwoHopSwap and TwoHopSwapV2 generate two Traded events.
+- The upgrade of the program generate special event `ProgramDeployed`.
 
 | Event                      | Instruction                          |
 | -------------------------- | ------------------------------------ |
+| ProgramDeployed            | (no whirlpool instruction)           |
 | ConfigExtensionInitialized | InitializeConfigExtension            |
 | ConfigExtensionUpdated     | SetConfigExtensionAuthority          |
 |                            | SetTokenBadgeAuthority               |
@@ -141,6 +180,9 @@ Only the following events are sent out.
 
 ## Event Definition
 - To reduce data size in the stream, field names and values are abbreviated.
+
+### ProgramDeployed (`PD`)
+no fields
 
 ### ConfigExtensionInitialized (`CEI`)
 | JSON Field | Name                       | Type         | Notes                     |
@@ -520,7 +562,75 @@ decimal adjusted price with 10 significant digits in scientific notation
 ## u64 and u128
 Fields with type u64 or u128 will be expressed as string to avoid number type issue in Javascript.
 
-# Event Stream Format
+# Account Delta
+Account change is categorized in the following 3 types:
+- Initialized: a new account has been initialized in the slot
+- Updated: an existing account has been updated in the slot
+- Closed: an existing account has been closed in the slot
+
+## Delta
+### Initialized (`I`)
+To initialize an account, you need to initialize account as `[0; length]` first, then apply each segment data to the zero initialized account.
+
+| JSON Field | Name         | Type         | Notes           |
+| ---------- | ------------ | ------------ | --------------- |
+| p          | pubkey       | PubkeyString | account address |
+| t          | account_type | AccountType  |                 |
+| d          | delta        | "I"          | Initialized     |
+| l          | length       | u16          | account length  |
+| s          | segments     | Segment[]    |                 |
+
+### Updated (`U`)
+To update an account data, you need to apply each segment data to the account.
+
+| JSON Field | Name         | Type         | Notes           |
+| ---------- | ------------ | ------------ | --------------- |
+| p          | pubkey       | PubkeyString | account address |
+| t          | account_type | AccountType  |                 |
+| d          | delta        | "U"          | Updated         |
+| s          | segments     | Segment[]    |                 |
+
+### Closed (`C`)
+You need to close the account.
+
+| JSON Field | Name         | Type         | Notes           |
+| ---------- | ------------ | ------------ | --------------- |
+| p          | pubkey       | PubkeyString | account address |
+| t          | account_type | AccountType  |                 |
+| d          | delta        | "C"          | Closed          |
+
+## Type Definition
+### AccountType
+| Account           | AccountType |
+| ----------------- | ----------- |
+| Config            | "C"         |
+| ConfigExtension   | "CE"        |
+| FeeTier           | "FT"        |
+| Whirlpool         | "W"         |
+| TickArray         | "TA"        |
+| Position          | "P"         |
+| PositionBundle    | "PB"        |
+| TokenBadgeDeleted | "TB"        |
+
+### Segment
+| JSON Field | Name   | Type   | Notes           |
+| ---------- | ------ | ------ | --------------- |
+| o          | offset | u16    |                 |
+| d          | data   | String | Base64 encoding |
+
+## Notes About Delta
+The deltas are derived from state changes on a per-slot basis.
+Therefore, the behavior is as follows:
+
+- Deltas for accounts updated multiple times within a single slot are consolidated into a single record.
+- If the result of updates within a slot matches the final state of the previous slot, no deltas are output.
+- If an account is initialized and then closed within the same slot, no deltas are output.
+- If an account is closed and then reinitialized within the same slot, the delta is recorded as Updated.
+
+The purpose of account delta is to maintain snapshots of account states at the slot level, not to track changes for each instruction or transaction.
+The responsibility of tracking instructions or transactions lies with events.
+
+# Stream Format
 ## Control Message
 ### opened
 If the stream is successfully started, this will be the first push.
@@ -543,14 +653,17 @@ This will be pushed when the stream is closed by the server.
 
 ## Data Message
 - Data is sent out for each slot.
-- Data will be sent out even if the slot has no Whirlpool events.
-- The data consists of `slot(s)`, `block height(h)`, `block time(t)`, and an array of successful transactions(`x`) that generated Whirlpool events.
-- A transaction consists of `signature(s)`, `payer(p)`, and Whirlpool events(`e`).
+- Data will be sent out even if the slot has no Whirlpool events or Whirlpool account delta.
+- If both event and account are sent out, the data for event is always sent first.
 - Field names are abbreviated to reduce data size.
 
-### Layout
+### Event Data Layout
+- The data consists of `slot(s)`, `block height(h)`, `block time(t)`, and an array of successful transactions(`x`) that generated Whirlpool events.
+- A transaction consists of `signature(s)`, `payer(p)`, and Whirlpool events(`e`).
+
 ```
 {
+  "ctrl": "data.event",
   "data": {
     "s": slot(u64),
     "h": block_height(u64),
@@ -588,9 +701,10 @@ This will be pushed when the stream is closed by the server.
 }
 ```
 
-### Example
+### Event Data Example
 ```
 {
+  "ctrl": "data.event",
   "data": {
     "s": 291135497,
     "h": 270037006,
@@ -696,6 +810,106 @@ This will be pushed when the stream is closed by the server.
           }
         ]
       }
+    ]
+  }
+}
+```
+
+### Account Data Layout
+- The data consists of `slot(s)`, `block height(h)`, `block time(t)`, and an array of updated accounts(`a`) whose data was updated in the slot.
+- An account delta data consists of `pubkey(p)`, `account type(t)`, `delta(d)` and some additional info for the delta.
+
+```
+{
+  "ctrl": "data.account",
+  "data": {
+    "s": slot(u64),
+    "h": block_height(u64),
+    "t": block_time(i64),
+    "a": [
+      {
+        "p": account_address(PubkeyString)
+        "t": account_type,
+        "d": "U" (updated),
+        "s": [
+          { "o": offset,"d": delta(Base64) },
+          { "o": offset,"d": delta(Base64) },
+          ...
+        ]
+      },
+      {
+        "p": account_address(PubkeyString)
+        "t": account_type,
+        "d": "I" (initialized),
+        "l": account_data_length,
+        "s":[
+          { "o": offset,"d": delta(Base64) },
+          { "o": offset,"d": delta(Base64) },
+          ...
+        ]
+      },
+      {
+        "p": account_address(PubkeyString)
+        "t": account_type,
+        "d": "C" (closed)
+      },
+      ...
+    ]
+  }
+}
+```
+
+### Account Data Example
+```
+{
+  "ctrl": "data.account",
+  "data": {
+    "s": 310236169,
+    "h": 288569517,
+    "t": 1735343857,
+    "a": [
+      {
+        "p": "5xBsx79W4mbfqf4r81wJztwDmsH3FK7enbBYaYjppEQ6",
+        "t": "TA",
+        "d": "U",
+        "s": [
+          {"o": 1482, "d": "Ifhk7fn//////////////98HmxIG"}
+        ]
+      },
+      {
+        "p": "5xMH1GGP1jyrbMoSsxRNQXGuvjnyte2eYHJy3hVGd6sz",
+        "t": "TA",
+        "d": "U",
+        "s": [
+          {"o": 2047, "d": "DZOoTBMAAAAAAAAAAAAAAEUdwcMW"},
+          {"o": 6341, "d": "JUZbMAgAAAAAAAAAAAAAAMfAsP0W"}
+        ]
+      },
+      {
+        "p": "4Eq688gAJRJiRzhFR4tKpVyRhknDvC8UkqsLmfsEzFFX",
+        "t": "W",
+        "d": "U",
+        "s": [
+          {"o": 261, "d": "8Q=="}
+        ]
+      },
+      ...
+      {
+        "p": "CDhRbmFymzdNXAnkLDgLHwCwZewqMVBbkLQSMSyJhpu2",
+        "t": "P",
+        "d": "I",
+        "l": 216,
+        "s": [
+          {"o": 0, "d": "qryP5HpA99CyNpDX0HWNHV2LiVDOx6m018ea6P+1xroNvWKhmDeTW2OOeGAMXNoW139U0T4A1hdjw/acLuJuN4g+pscc+WXxE4dd6oYAAAAAAAAAAAAAANi8//9Yv///aJkovOtGTwAAAAAAAAAAAAAAAAAAAAAAwIBct8gpCw=="}
+        ]
+      },
+      ...
+      {
+        "p": "AresKgKg6TsuiFBcTeVxYXQoJC6E5d11JN8rw4YWQ5Q9",
+        "t": "P",
+        "d": "C"
+      },
+      ...
     ]
   }
 }
