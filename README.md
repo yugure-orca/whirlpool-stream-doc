@@ -479,7 +479,7 @@ no fields
 | w          | whirlpool            | PubkeyString |                    |
 | ri         | reward_index         | u8           |                    |
 | rm         | reward_mint          | PubkeyString |                    |
-| rtp        | reward_token_program | PubkeyString |                    |
+| rtp        | reward_token_program | TokenProgram |                    |
 | rd         | reward_decimals      | Decimals     |                    |
 
 ### TickArrayInitialized (`TAI`)
