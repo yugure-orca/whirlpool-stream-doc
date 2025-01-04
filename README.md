@@ -1,5 +1,7 @@
 🚨 THIS FEATURE IS STILL EXPERIMENTAL
 
+![whirlpool-stream-landing](https://github.com/user-attachments/assets/29d360b6-798c-4d81-9bdc-bc2b47579fac)
+
 # What is Whirlpool Stream
 Whirlpool Stream is a semi-real-time distribution of the followings:
 - event: instructions executed by Whirlpool program along with useful data
