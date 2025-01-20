@@ -14,6 +14,9 @@ It also provides strong data consistency.
 The data delivered is always for the slot with the next block height after the previously delivered block height, and is never missing.
 In addition, delivery can start from any slot within a 3-day period, so if the stream is disconnected, the stream can be resumed without losing any data.
 
+## Client Library
+https://github.com/yugure-orca/whirlpool-stream-client
+
 ## Demo
 ### event stream (default)
 https://orcanauts-a.whirlpool-stream.pleiades.dev/demo/stream/refined/sse?limit=20
@@ -37,6 +40,9 @@ There are 2 endpoints (`orcanauts-a` and `orcanauts-b`) for high availability pu
 
 You can try the following "DEMO" endpoint.
 But its concurrency is 1, so connection will be closed when another request is made.
+
+🙏 Please use this endpoint only as a "taste" of the Whirlpool Stream.
+If you like the functionality of the Whirlpool Stream, obtain your own APIKEY.
 
 | Protocol           | Endpoint                                                   |
 | ------------------ | ---------------------------------------------------------- |
